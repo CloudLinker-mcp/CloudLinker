@@ -119,7 +119,7 @@
 
 --- 
 
-**¿Dudas?** Pregunta a Frank o escribe en el grupo de WhatsApp. 😊  
+**¿Dudas?** Pregunta en Discord. 😊  
 
 --- 
 
