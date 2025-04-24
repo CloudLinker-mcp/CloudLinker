@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from .settings import settings
 from .db import test_connection
+from .routers import customers  # Import your new customers router
 
 app = FastAPI()
+
+# Include the customers router
+app.include_router(customers.router, prefix="/customers", tags=["customers"])
 
 @app.get("/health")
 async def health():
