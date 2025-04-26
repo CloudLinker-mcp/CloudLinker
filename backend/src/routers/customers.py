@@ -1,23 +1,41 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from typing import List
-from src.models.customer import CustomerCreate, CustomerRead
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..schemas.customer import CustomerCreate, CustomerRead
+from ..services.customer_service import CustomerService
+from ..db import get_db
 
 router = APIRouter()
 
-# Temporary in-memory storage for demo purposes
-customers = []
-next_id = 1
+@router.post("", response_model=CustomerRead, status_code=201)
+async def create_customer(
+    customer: CustomerCreate,
+    db: AsyncSession = Depends(get_db)
+) -> CustomerRead:
+    """Create a new customer.
+    
+    Args:
+        customer: Customer data to create
+        db: Database session
+        
+    Returns:
+        CustomerRead: Created customer data
+    """
+    service = CustomerService(db)
+    return await service.create_customer(customer)
 
-# Endpoint to create a customer
-@router.post("/customers", response_model=CustomerRead)
-def create_customer(customer: CustomerCreate):
-    global next_id
-    customer_data = {"id": next_id, **customer.dict()}
-    customers.append(customer_data)
-    next_id += 1
-    return customer_data
-
-# Endpoint to get a list of customers
-@router.get("/customers", response_model=List[CustomerRead])
-def get_customers():
-    return customers
+@router.get("", response_model=List[CustomerRead])
+async def get_customers(
+    db: AsyncSession = Depends(get_db)
+) -> List[CustomerRead]:
+    """Get all customers.
+    
+    Args:
+        db: Database session
+        
+    Returns:
+        List[CustomerRead]: List of all customers
+    """
+    service = CustomerService(db)
+    return await service.get_customers()
